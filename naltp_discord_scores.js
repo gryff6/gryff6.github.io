@@ -73,7 +73,7 @@ form.addEventListener("submit", async function (event) {
 	} else if (team1[0] === "N") {
 		league_text = "Minors";
 		league_color = 1515358;
-	} else if (team1[0] === "B") {
+	} else if (team1[0] === "A") {
 		league_text = "Novice";
 		league_color = 16745753;
 	}
