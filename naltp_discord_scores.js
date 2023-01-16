@@ -18,10 +18,8 @@ async function fetchEuData(eu_url) {
 	// find the winning team
 	if (team1_score > team2_score) {
 		winner = team1;
-//		if (OT) {winner = winner + "*";}
 	} else {
 		winner = team2;
-//		if (OT) {winner = winner + "*"}
 	}
 
 
@@ -29,6 +27,14 @@ async function fetchEuData(eu_url) {
 	let result = [team1,team1_score,team2,team2_score,winner,OT,map];
 
 	return result;
+}
+
+// stolen from https://stackoverflow.com/questions/53726337/send-discord-webhook-without-jquery
+function discord_message(webHookURL, message) {
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", webHookURL, true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.send(message);
 }
 
 const form = document.querySelector("#form");
@@ -47,6 +53,8 @@ form.addEventListener("submit", async function (event) {
 	urls[6] = document.getElementById("g7").value;
 	let week = document.getElementById("week").value;
 	let webhook_url = document.getElementById("webhookURL").value;
+	let youtube_url = document.getElementById("youtube").value;
+	let twitch_url = document.getElementById("twitch").value;
 
 	let results = [];
 	// make an array of arrays with the results form 
@@ -95,7 +103,23 @@ form.addEventListener("submit", async function (event) {
 		]
 	};
 
-	// build output[description]
+
+	// Some output formatting things
+	let VOD_seperator = " | ";
+	if (youtube_url === "" || twitch_url === "") {
+		VOD_seperator = "";
+	}
+
+	let youtube_text = "Youtube"
+	let twitch_text = "Twitch"
+
+	if (youtube_url === "") {youtube_text = "";}
+	if (twitch_url === "") {twitch_text = "";}
+
+	// add VOD links to output
+	output["embeds"][0]["description"] += "[**" + youtube_text + "**](" + youtube_url + ")" + VOD_seperator + "[**" + twitch_text + "**](" + twitch_url + ")\n";
+
+	// fill out output[description] with game scores
 	// results[i] formatted as [0: team 1 name(string), 1: team 1 score(int), 2: team 2 name(string), 3: team 2 score(int), 4: winner(string), 5: OT(bool), 6: map(string)]
 	for (let i = 0; i < results.length; i++) {
 		let game = results[i];
@@ -154,7 +178,7 @@ form.addEventListener("submit", async function (event) {
 		}
 
 		// add game #i scoreline / formatting and all
-		output["embeds"][0]["description"] += "[`Game " + (i+1) + ": " + higher_score_space + higher_score + " - " + lower_score + lower_score_space + " " + game[4] + OT_asterisk + " | " + game[6] + "`](" + urls[i] + ")\n";
+		output["embeds"][0]["description"] += "[`Game " + (i+1) + ": " + game[4] + OT_asterisk + " " + higher_score_space + higher_score + " - " + lower_score + lower_score_space + " | " + game[6] + "`](" + urls[i] + ")\n";
 
 	}
 
@@ -170,13 +194,6 @@ form.addEventListener("submit", async function (event) {
 	discord_message(webhook_url, JSON.stringify(output));
 })
 
-// stolen from https://stackoverflow.com/questions/53726337/send-discord-webhook-without-jquery
-function discord_message(webHookURL, message) {
-    var xhr = new XMLHttpRequest();
-    xhr.open("POST", webHookURL, true);
-    xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.send(message);
-}
 
 
 
