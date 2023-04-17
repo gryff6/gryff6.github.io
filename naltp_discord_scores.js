@@ -110,14 +110,22 @@ form.addEventListener("submit", async function (event) {
 		VOD_seperator = "";
 	}
 
-	let youtube_text = "Youtube"
-	let twitch_text = "Twitch"
+	let youtube_text = "[**Youtube**]"
+	let twitch_text = "[**Twitch**]"
 
-	if (youtube_url === "") {youtube_text = "";}
-	if (twitch_url === "") {twitch_text = "";}
+	if (youtube_url === "") {
+		youtube_text = "";
+	} else {
+		youtube_text += "(" + youtube_url + ")"
+	}
+	if (twitch_url === "") {
+		twitch_text = "";
+	} else {
+		twitch_text += "(" + twitch_url + ")"
+	}
 
 	// add VOD links to output
-	output["embeds"][0]["description"] += "[**" + youtube_text + "**](" + youtube_url + ")" + VOD_seperator + "[**" + twitch_text + "**](" + twitch_url + ")\n";
+	output["embeds"][0]["description"] += youtube_text + VOD_seperator + twitch_text + "\n";
 
 	// fill out output[description] with game scores
 	// results[i] formatted as [0: team 1 name(string), 1: team 1 score(int), 2: team 2 name(string), 3: team 2 score(int), 4: winner(string), 5: OT(bool), 6: map(string)]
